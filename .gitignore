@@ -1,0 +1,4 @@
+node_modules/
+.nodered-test/
+agent-tools/
+*.log

@@ -1,0 +1,22 @@
+{
+  "name": "nodered-sdm630-emulation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node-RED-Flow: Huawei SUN2000 Zählerblock als Eastron SDM630 für einen Growatt MOD TL3-HU",
+  "scripts": {
+    "build": "node scripts/build-flow.js",
+    "test": "node scripts/build-flow.js && node --test test/map.test.js",
+    "test:e2e": "node --test --test-timeout 120000 test/e2e.test.js",
+    "dummy": "node scripts/huawei-dummy.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "modbus-serial": "^8.0.25",
+    "node-red": "^4.1.16",
+    "node-red-contrib-modbus": "^5.60.2",
+    "node-red-dashboard": "^3.6.6"
+  }
+}
