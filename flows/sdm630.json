@@ -1,320 +1,1137 @@
 [
-  {
-    "id": "sdm-tab",
-    "type": "tab",
-    "label": "SDM630 Emulation",
-    "disabled": false,
-    "info": "Liest den DTSU666-H über den bestehenden Huawei-Modbus-Client und antwortet dem Growatt als Eastron SDM630. Die Huawei-Lesung ist absichtlich deaktiviert."
-  },
-  {
-    "id": "sdm-ui-tab",
-    "type": "ui_tab",
-    "name": "SDM630",
-    "icon": "dashboard",
-    "order": 99,
-    "disabled": false,
-    "hidden": false
-  },
-  {
-    "id": "sdm-ui-hand",
-    "type": "ui_group",
-    "name": "Handwert",
-    "tab": "sdm-ui-tab",
-    "order": 1,
-    "disp": true,
-    "width": 12,
-    "collapse": false,
-    "className": ""
-  },
-  {
-    "id": "sdm-ui-live",
-    "type": "ui_group",
-    "name": "Messwerte",
-    "tab": "sdm-ui-tab",
-    "order": 2,
-    "disp": true,
-    "width": 12,
-    "collapse": false,
-    "className": ""
-  },
-  {
-    "id": "sdm-note",
-    "type": "comment",
-    "z": "sdm-tab",
-    "name": "Vor dem Aktivieren den bestehenden Modbus-Client wählen",
-    "info": "Die Modbus-Lesung ist deaktiviert und zeigt auf einen Platzhalter ohne erreichbaren Host. Vor dem Aktivieren im Read-Node den bereits vorhandenen Huawei-Client auswählen, den Platzhalter löschen und die Unit-ID leer lassen. Liegt Register 37100 schon in einer bestehenden Lesung, diesen Ausgang oder den Link-In „Bestehende Huawei-Lesung“ verwenden und den Read-Node aus lassen.",
-    "x": 280,
-    "y": 40,
-    "wires": []
-  },
-  {
-    "id": "sdm-client",
-    "type": "modbus-client",
-    "name": "Platzhalter, nicht verbinden",
-    "clienttype": "tcp",
-    "bufferCommands": true,
-    "stateLogEnabled": false,
-    "queueLogEnabled": false,
-    "failureLogEnabled": true,
-    "tcpHost": "192.0.2.1",
-    "tcpPort": "502",
-    "tcpType": "DEFAULT",
-    "serialPort": "/dev/ttyUSB",
-    "serialType": "RTU-BUFFERD",
-    "serialBaudrate": "9600",
-    "serialDatabits": "8",
-    "serialStopbits": "1",
-    "serialParity": "none",
-    "serialConnectionDelay": "100",
-    "serialAsciiResponseStartDelimiter": "0x3A",
-    "unit_id": "1",
-    "commandDelay": "1",
-    "clientTimeout": "1000",
-    "reconnectOnTimeout": true,
-    "reconnectTimeout": "2000",
-    "parallelUnitIdsAllowed": true,
-    "showErrors": false,
-    "showWarnings": true,
-    "showLogs": true
-  },
-  {
-    "id": "sdm-read",
-    "type": "modbus-read",
-    "z": "sdm-tab",
-    "d": true,
-    "name": "Huawei Zähler 37100",
-    "topic": "huawei",
-    "showStatusActivities": false,
-    "logIOActivities": false,
-    "showErrors": false,
-    "showWarnings": true,
-    "unitid": "",
-    "dataType": "HoldingRegister",
-    "adr": "37100",
-    "quantity": "39",
-    "rate": "5",
-    "rateUnit": "s",
-    "delayOnStart": false,
-    "enableDeformedMessages": false,
-    "startDelayTime": "",
-    "server": "sdm-client",
-    "useIOFile": false,
-    "ioFile": "",
-    "useIOForPayload": false,
-    "emptyMsgOnFail": false,
-    "x": 180,
-    "y": 160,
-    "wires": [
-      [
-        "sdm-fn"
-      ],
-      []
-    ]
-  },
-  {
-    "id": "sdm-link",
-    "type": "link in",
-    "z": "sdm-tab",
-    "name": "Bestehende Huawei-Lesung",
-    "links": [],
-    "x": 190,
-    "y": 220,
-    "wires": [
-      [
-        "sdm-fn"
-      ]
-    ]
-  },
-  {
-    "id": "sdm-tick",
-    "type": "inject",
-    "z": "sdm-tab",
-    "name": "Alle 2 s nachlegen",
-    "props": [
-      {
-        "p": "topic",
-        "vt": "str"
-      }
-    ],
-    "repeat": "2",
-    "crontab": "",
-    "once": true,
-    "onceDelay": "1",
-    "topic": "tick",
-    "payload": "",
-    "payloadType": "date",
-    "x": 170,
-    "y": 280,
-    "wires": [
-      [
-        "sdm-fn"
-      ]
-    ]
-  },
-  {
-    "id": "sdm-switch",
-    "type": "ui_switch",
-    "z": "sdm-tab",
-    "name": "",
-    "label": "Handwert statt Huawei",
-    "tooltip": "Aktivieren, um die Gesamtleistung von Hand vorzugeben.",
-    "group": "sdm-ui-hand",
-    "order": 1,
-    "width": 6,
-    "height": 1,
-    "passthru": true,
-    "decouple": "false",
-    "topic": "manual",
-    "topicType": "str",
-    "style": "",
-    "onvalue": true,
-    "onvalueType": "bool",
-    "onicon": "",
-    "oncolor": "",
-    "offvalue": false,
-    "offvalueType": "bool",
-    "officon": "",
-    "offcolor": "",
-    "animate": false,
-    "className": "",
-    "x": 170,
-    "y": 340,
-    "wires": [
-      [
-        "sdm-fn"
-      ]
-    ]
-  },
-  {
-    "id": "sdm-power",
-    "type": "ui_template",
-    "z": "sdm-tab",
-    "group": "sdm-ui-hand",
-    "name": "Leistung eingeben",
-    "order": 2,
-    "width": 6,
-    "height": 4,
-    "format": "<form ng-submit=\"send({topic:'manualPower', payload:power*1})\" style=\"padding:4px 0\">\n  <label for=\"leistung\" style=\"display:block;margin-bottom:4px\">Leistung in Watt</label>\n  <input id=\"leistung\" type=\"number\" step=\"10\" min=\"-20000\" max=\"20000\" ng-model=\"power\" ng-init=\"power=0\" aria-label=\"Leistung in Watt. Positiv ist Bezug, negativ ist Einspeisung.\" style=\"width:100%;font-size:1.1rem;padding:6px;box-sizing:border-box\">\n  <button type=\"submit\" style=\"margin-top:8px\">Übernehmen</button>\n  <p style=\"margin:6px 0 0;color:#475569\">Positiv ist Bezug, negativ ist Einspeisung. Wirkt nur bei eingeschaltetem Handwert.</p>\n</form>",
-    "storeOutMessages": false,
-    "fwdInMessages": false,
-    "resendOnRefresh": false,
-    "templateScope": "local",
-    "className": "",
-    "x": 180,
-    "y": 400,
-    "wires": [
-      [
-        "sdm-fn"
-      ]
-    ]
-  },
-  {
-    "id": "sdm-fn",
-    "type": "function",
-    "z": "sdm-tab",
-    "name": "Huawei nach SDM630",
-    "func": "const sdm = (function (module) {\n'use strict';\n\nconst METER_START = 37100;\nconst METER_COUNT = 39;\nconst IMAGE_REGISTERS = 256;\nconst STALE_AFTER_MS = 15000;\n\nfunction i32(regs, offset) {\n  const hi = regs[offset] & 0xffff;\n  const lo = regs[offset + 1] & 0xffff;\n  return (((hi << 16) | lo) | 0);\n}\n\nfunction i16(value) {\n  const v = value & 0xffff;\n  return (v & 0x8000) ? v - 0x10000 : v;\n}\n\nfunction putFloat(buf, register, value) {\n  const n = Number(value);\n  buf.writeFloatBE(Number.isFinite(n) ? n : 0, register * 2);\n}\n\nfunction readFloat(image, register) {\n  const buf = Buffer.isBuffer(image) ? image : Buffer.from(image);\n  return buf.readFloatBE(register * 2);\n}\n\nfunction emptyState() {\n  return {\n    manual: false,\n    manualPower: 0,\n    manualImportKwh: 0,\n    manualExportKwh: 0,\n    lastManualAt: null,\n    lastHuaweiRegs: null,\n    meterStatus: null,\n    huaweiError: null,\n    huaweiView: null,\n    sdmView: null,\n    image: null,\n    lastGoodAt: null,\n    dashboard: null\n  };\n}\n\nfunction asRegisters(value) {\n  if (Buffer.isBuffer(value)) {\n    if (value.length < 2 || value.length % 2 !== 0) return null;\n    const regs = [];\n    for (let i = 0; i < value.length; i += 2) regs.push(value.readUInt16BE(i));\n    return regs;\n  }\n  if (Array.isArray(value) && value.length > 0 && value.every((n) => Number.isFinite(Number(n)))) {\n    return value.map((n) => Number(n) & 0xffff);\n  }\n  return null;\n}\n\nfunction startAddressOf(msg) {\n  const candidates = [\n    msg && msg.input && msg.input.payload && msg.input.payload.address,\n    msg && msg.input && msg.input.address,\n    msg && msg.payload && msg.payload.address\n  ];\n  for (const candidate of candidates) {\n    if (candidate === undefined || candidate === null || candidate === '') continue;\n    const n = Number(candidate);\n    if (Number.isInteger(n)) return n;\n  }\n  return null;\n}\n\nfunction extractRegisters(msg) {\n  const payload = msg ? msg.payload : null;\n  let regs = null;\n  if (payload && typeof payload === 'object' && !Buffer.isBuffer(payload) && !Array.isArray(payload)) {\n    regs = asRegisters(payload.data) || asRegisters(payload.buffer) || asRegisters(payload.values) || asRegisters(payload.payload);\n  }\n  if (!regs) regs = asRegisters(payload);\n  if (!regs && msg && Array.isArray(msg.values)) regs = asRegisters(msg.values);\n  if (!regs) throw new Error('Zählerblock nicht erkannt');\n\n  const start = startAddressOf(msg);\n  if (start == null) {\n    if (regs.length < METER_COUNT) throw new Error('Zu wenig Register, 39 ab 37100 erwartet');\n    return regs.slice(0, METER_COUNT);\n  }\n  const offset = METER_START - start;\n  if (offset < 0 || offset + METER_COUNT > regs.length) {\n    throw new Error('Block 37100 liegt nicht in der Lesung (Start ' + start + ', Länge ' + regs.length + ')');\n  }\n  return regs.slice(offset, offset + METER_COUNT);\n}\n\nfunction decodeHuawei(regs) {\n  const v = [i32(regs, 1) / 10, i32(regs, 3) / 10, i32(regs, 5) / 10];\n  const i = [i32(regs, 7) / 100, i32(regs, 9) / 100, i32(regs, 11) / 100];\n  const pPhaseRaw = [i32(regs, 32), i32(regs, 34), i32(regs, 36)];\n  const pPhase = pPhaseRaw.map((raw, idx) => {\n    if (raw !== 0) return raw;\n    if (i[idx] !== 0 && v[idx] !== 0) return v[idx] * i[idx];\n    return 0;\n  });\n  const pTotalRaw = i32(regs, 13);\n  const vll = [i32(regs, 26) / 10, i32(regs, 28) / 10, i32(regs, 30) / 10];\n  return {\n    status: regs[0] & 0xffff,\n    v,\n    i,\n    pPhase,\n    pTotal: pTotalRaw !== 0 ? pTotalRaw : pPhase.reduce((sum, p) => sum + p, 0),\n    qTotal: i32(regs, 15),\n    pf: i16(regs[17]) / 1000,\n    freq: i16(regs[18]) / 100 || 50,\n    exportKwh: i32(regs, 19) / 100,\n    importKwh: i32(regs, 21) / 100,\n    vll\n  };\n}\n\nfunction clampPf(value) {\n  if (!Number.isFinite(value)) return 0;\n  return Math.max(-1, Math.min(1, value));\n}\n\nfunction toSdm(huawei) {\n  const pPhase = huawei.pPhase.map((p) => -p);\n  const current = huawei.i.map((a) => -a);\n  const pTotal = -huawei.pTotal;\n  const qTotal = -huawei.qTotal;\n  const pf = clampPf(huawei.pf === 0 ? (pTotal === 0 ? 1 : Math.sign(pTotal)) : -huawei.pf);\n  const vaPhase = pPhase.map((p, idx) => {\n    const apparent = Math.abs(huawei.v[idx] * huawei.i[idx]);\n    return apparent || Math.abs(p);\n  });\n  const sqrt3 = Math.sqrt(3);\n  return {\n    v: huawei.v.slice(),\n    i: current,\n    pPhase,\n    pTotal,\n    qTotal,\n    vaPhase,\n    vaTotal: vaPhase.reduce((sum, va) => sum + va, 0),\n    pf,\n    pfPhase: pPhase.map((p) => (p === 0 ? 0 : Math.sign(p) * (Math.abs(pf) || 1))),\n    freq: huawei.freq,\n    importKwh: huawei.importKwh,\n    exportKwh: huawei.exportKwh,\n    vAvg: (huawei.v[0] + huawei.v[1] + huawei.v[2]) / 3,\n    iSum: current[0] + current[1] + current[2],\n    iAvg: (current[0] + current[1] + current[2]) / 3,\n    vll: huawei.vll.map((volts, idx) => volts || huawei.v[idx] * sqrt3),\n    iN: 0\n  };\n}\n\nfunction buildImage(sdm) {\n  const buf = Buffer.alloc(IMAGE_REGISTERS * 2);\n  putFloat(buf, 0x0000, sdm.v[0]);\n  putFloat(buf, 0x0002, sdm.v[1]);\n  putFloat(buf, 0x0004, sdm.v[2]);\n  putFloat(buf, 0x0006, sdm.i[0]);\n  putFloat(buf, 0x0008, sdm.i[1]);\n  putFloat(buf, 0x000a, sdm.i[2]);\n  putFloat(buf, 0x000c, sdm.pPhase[0]);\n  putFloat(buf, 0x000e, sdm.pPhase[1]);\n  putFloat(buf, 0x0010, sdm.pPhase[2]);\n  putFloat(buf, 0x0012, sdm.vaPhase[0]);\n  putFloat(buf, 0x0014, sdm.vaPhase[1]);\n  putFloat(buf, 0x0016, sdm.vaPhase[2]);\n  putFloat(buf, 0x001e, sdm.pfPhase[0]);\n  putFloat(buf, 0x0020, sdm.pfPhase[1]);\n  putFloat(buf, 0x0022, sdm.pfPhase[2]);\n  putFloat(buf, 0x002a, sdm.vAvg);\n  putFloat(buf, 0x002e, sdm.iAvg);\n  putFloat(buf, 0x0030, sdm.iSum);\n  putFloat(buf, 0x0034, sdm.pTotal);\n  putFloat(buf, 0x0038, sdm.vaTotal);\n  putFloat(buf, 0x003c, sdm.qTotal);\n  putFloat(buf, 0x003e, sdm.pf);\n  putFloat(buf, 0x0046, sdm.freq);\n  putFloat(buf, 0x0048, sdm.importKwh);\n  putFloat(buf, 0x004a, sdm.exportKwh);\n  putFloat(buf, 0x00c8, sdm.vll[0]);\n  putFloat(buf, 0x00ca, sdm.vll[1]);\n  putFloat(buf, 0x00cc, sdm.vll[2]);\n  putFloat(buf, 0x00e0, sdm.iN);\n  return buf;\n}\n\nfunction manualSdm(state, now) {\n  if (state.lastManualAt != null) {\n    let dtMs = now - state.lastManualAt;\n    if (dtMs < 0) dtMs = 0;\n    if (dtMs > 60000) dtMs = 60000;\n    const kwh = Math.abs(state.manualPower) * (dtMs / 3600000) / 1000;\n    if (state.manualPower > 0) state.manualImportKwh += kwh;\n    else if (state.manualPower < 0) state.manualExportKwh += kwh;\n  }\n  state.lastManualAt = now;\n  const voltage = [230, 230, 230];\n  const pPhase = [state.manualPower / 3, state.manualPower / 3, state.manualPower / 3];\n  const current = pPhase.map((p, idx) => p / voltage[idx]);\n  const sign = state.manualPower === 0 ? 1 : Math.sign(state.manualPower);\n  return {\n    v: voltage,\n    i: current,\n    pPhase,\n    pTotal: state.manualPower,\n    qTotal: 0,\n    vaPhase: pPhase.map((p) => Math.abs(p)),\n    vaTotal: Math.abs(state.manualPower),\n    pf: sign,\n    pfPhase: pPhase.map((p) => (p === 0 ? 0 : Math.sign(p))),\n    freq: 50,\n    importKwh: state.manualImportKwh,\n    exportKwh: state.manualExportKwh,\n    vAvg: 230,\n    iSum: current.reduce((sum, a) => sum + a, 0),\n    iAvg: current.reduce((sum, a) => sum + a, 0) / 3,\n    vll: voltage.map((v) => v * Math.sqrt(3)),\n    iN: 0\n  };\n}\n\nfunction fmt(value, digits) {\n  if (!Number.isFinite(value)) return '–';\n  const negative = value < 0;\n  const fixed = Math.abs(value).toFixed(digits);\n  const parts = fixed.split('.');\n  const grouped = parts[0].replace(/\\B(?=(\\d{3})+(?!\\d))/g, '.');\n  const body = digits ? grouped + ',' + parts[1] : grouped;\n  return negative ? '-' + body : body;\n}\n\nfunction direction(power) {\n  if (power > 25) return 'Bezug';\n  if (power < -25) return 'Einspeisung';\n  return 'ausgeglichen';\n}\n\nfunction phaseText(voltage, current, power) {\n  return fmt(voltage, 1) + ' V · ' + fmt(current, 2) + ' A · ' + fmt(power, 0) + ' W';\n}\n\nfunction makeDashboard(state, now) {\n  const ageSec = state.lastGoodAt == null ? null : Math.max(0, Math.round((now - state.lastGoodAt) / 1000));\n  const stale = !state.manual && !!state.image && (state.huaweiError || (now - state.lastGoodAt) > STALE_AFTER_MS);\n  const sdm = state.sdmView;\n  const huawei = state.huaweiView;\n  const rows = [];\n  if (huawei) {\n    rows.push({ label: 'Huawei gesamt', value: fmt(huawei.pTotal, 0) + ' W (positiv = Einspeisung)' });\n    huawei.v.forEach((volts, idx) => {\n      rows.push({ label: 'Huawei L' + (idx + 1), value: phaseText(volts, huawei.i[idx], huawei.pPhase[idx]) });\n    });\n  }\n  if (sdm) {\n    rows.push({ label: 'SDM630 gesamt', value: fmt(sdm.pTotal, 0) + ' W (positiv = Bezug)' });\n    sdm.v.forEach((volts, idx) => {\n      rows.push({ label: 'SDM630 L' + (idx + 1), value: phaseText(volts, sdm.i[idx], sdm.pPhase[idx]) });\n    });\n    rows.push({ label: 'Frequenz', value: fmt(sdm.freq, 2) + ' Hz' });\n    rows.push({ label: 'Import', value: fmt(sdm.importKwh, 2) + ' kWh' });\n    rows.push({ label: 'Export', value: fmt(sdm.exportKwh, 2) + ' kWh' });\n    rows.push({ label: 'Leistungsfaktor', value: fmt(sdm.pf, 2) });\n  }\n  let note = '';\n  if (!state.image) note = 'Noch kein gültiger Zählerwert. Der SDM630-Slave bleibt auf 0, bis der Huawei Status „normal“ meldet.';\n  else if (state.manual) note = 'Handwert ist aktiv. Der Growatt sieht diese Leistung, nicht den Huawei.';\n  else if (state.huaweiError) note = state.huaweiError;\n  else if (stale) note = 'Huawei-Lesung ist älter als 15 s. Der letzte gültige Wert bleibt stehen.';\n  else note = 'Zähler normal' + (ageSec == null ? '' : ', Alter ' + ageSec + ' s') + '.';\n\n  const power = sdm ? sdm.pTotal : null;\n  return {\n    tone: !sdm ? 'wait' : state.manual ? 'manual' : stale ? 'wait' : power > 25 ? 'import' : power < -25 ? 'export' : 'idle',\n    headline: !sdm ? 'Warte auf den Huawei-Zähler' : (state.manual ? 'Handwert · ' : '') + direction(power) + ' · ' + fmt(power, 0) + ' W',\n    signed: sdm ? fmt(power, 0) + ' W' : '–',\n    rows,\n    note\n  };\n}\n\nfunction publish(state, sdm, now) {\n  state.sdmView = sdm;\n  state.image = Array.from(buildImage(sdm));\n  state.lastGoodAt = now;\n}\n\nfunction applyHuawei(state, msg) {\n  const regs = extractRegisters(msg);\n  const decoded = decodeHuawei(regs);\n  state.meterStatus = decoded.status;\n  state.huaweiView = {\n    v: decoded.v,\n    i: decoded.i,\n    pPhase: decoded.pPhase,\n    pTotal: decoded.pTotal,\n    freq: decoded.freq,\n    importKwh: decoded.importKwh,\n    exportKwh: decoded.exportKwh\n  };\n  if (decoded.status !== 1) {\n    state.huaweiError = 'Zählerstatus ' + decoded.status + ' (nicht normal). Der letzte gültige SDM630-Wert bleibt stehen.';\n    return;\n  }\n  state.huaweiError = null;\n  state.lastHuaweiRegs = regs.map((n) => n & 0xffff);\n  if (!state.manual) publish(state, toSdm(decoded), state._now);\n}\n\nfunction step(rawState, event) {\n  const state = Object.assign(emptyState(), rawState || {});\n  const now = event.now == null ? Date.now() : event.now;\n  state._now = now;\n\n  if (event.kind === 'manualFlag') {\n    state.manual = !!event.value;\n    if (!state.manual) state.lastManualAt = null;\n  } else if (event.kind === 'manualPower') {\n    state.manualPower = Number(event.value) || 0;\n  } else if (event.kind === 'huawei') {\n    try {\n      applyHuawei(state, event.msg);\n    } catch (err) {\n      state.huaweiError = err.message;\n    }\n  } else if (event.kind === 'huaweiError') {\n    state.huaweiError = event.error || 'Lesefehler Huawei';\n  }\n\n  if (event.kind === 'manualFlag' && !state.manual && state.lastHuaweiRegs && state.meterStatus === 1 && !state.huaweiError) {\n    publish(state, toSdm(decodeHuawei(state.lastHuaweiRegs)), now);\n  }\n\n  let write = false;\n  if (state.manual) {\n    publish(state, manualSdm(state, now), now);\n    write = true;\n  } else if (event.kind === 'huawei' && state.meterStatus === 1 && !state.huaweiError) {\n    write = true;\n  } else if (event.kind === 'tick' && state.image) {\n    write = true;\n  }\n\n  delete state._now;\n  state.dashboard = makeDashboard(state, now);\n  return { state, write };\n}\n\nfunction crc16(buffer) {\n  let crc = 0xffff;\n  for (let n = 0; n < buffer.length; n++) {\n    crc ^= buffer[n];\n    for (let bit = 0; bit < 8; bit++) {\n      const lsb = crc & 1;\n      crc >>>= 1;\n      if (lsb) crc ^= 0xa001;\n    }\n  }\n  return crc & 0xffff;\n}\n\nfunction exceptionFrame(slave, fc, code) {\n  const resp = Buffer.alloc(5);\n  resp[0] = slave;\n  resp[1] = fc | 0x80;\n  resp[2] = code;\n  const crc = crc16(resp.subarray(0, 3));\n  resp[3] = crc & 0xff;\n  resp[4] = (crc >> 8) & 0xff;\n  return resp;\n}\n\nfunction handleRtuRequest(image, frame) {\n  if (!frame || frame.length < 8) return { consume: 0, response: null };\n  const crc = crc16(frame.subarray(0, 6));\n  const got = frame[6] | (frame[7] << 8);\n  if (crc !== got) return { consume: 1, response: null };\n  const slave = frame[0];\n  const fc = frame[1];\n  const address = (frame[2] << 8) | frame[3];\n  const quantity = (frame[4] << 8) | frame[5];\n  if (slave !== 2) return { consume: 8, response: null };\n  if (fc !== 3 && fc !== 4) return { consume: 8, response: exceptionFrame(slave, fc, 1) };\n  if (quantity < 1 || quantity > 125) return { consume: 8, response: exceptionFrame(slave, fc, 3) };\n  const source = image && image.length ? Buffer.from(image) : Buffer.alloc(IMAGE_REGISTERS * 2);\n  const start = address * 2;\n  const byteLen = quantity * 2;\n  if (start < 0 || start + byteLen > source.length) return { consume: 8, response: exceptionFrame(slave, fc, 2) };\n  const resp = Buffer.alloc(3 + byteLen + 2);\n  resp[0] = slave;\n  resp[1] = fc;\n  resp[2] = byteLen;\n  source.copy(resp, 3, start, start + byteLen);\n  const outCrc = crc16(resp.subarray(0, resp.length - 2));\n  resp[resp.length - 2] = outCrc & 0xff;\n  resp[resp.length - 1] = (outCrc >> 8) & 0xff;\n  return { consume: 8, response: resp };\n}\n\nfunction consumeRtu(pending, chunk, image) {\n  let buf = pending && pending.length ? Buffer.concat([Buffer.from(pending), Buffer.from(chunk)]) : Buffer.from(chunk);\n  const responses = [];\n  while (buf.length >= 8) {\n    const result = handleRtuRequest(image, buf);\n    if (!result.consume) break;\n    buf = buf.subarray(result.consume);\n    if (result.response) responses.push(result.response);\n  }\n  if (buf.length > 64) buf = buf.subarray(buf.length - 64);\n  return {\n    pending: Array.from(buf),\n    response: responses.length ? Buffer.concat(responses) : null\n  };\n}\n\nfunction classify(msg) {\n  if (msg && msg._session && msg._session.type === 'tcp') return { kind: 'rtu' };\n  if (!msg || msg.topic === 'tick') return { kind: 'tick' };\n  if (msg.topic === 'manual') {\n    return { kind: 'manualFlag', value: msg.payload === true || msg.payload === 'true' || msg.payload === 1 };\n  }\n  if (msg.topic === 'manualPower') return { kind: 'manualPower', value: Number(msg.payload) };\n  return { kind: 'huawei', msg };\n}\n\nmodule.exports = {\n  METER_START,\n  METER_COUNT,\n  IMAGE_REGISTERS,\n  STALE_AFTER_MS,\n  emptyState,\n  extractRegisters,\n  decodeHuawei,\n  toSdm,\n  buildImage,\n  readFloat,\n  step,\n  crc16,\n  handleRtuRequest,\n  consumeRtu,\n  classify,\n  makeDashboard\n};\n\nreturn module.exports;\n})({ exports: {} });\nconst event = sdm.classify(msg);\nconst now = Date.now();\n\nif (event.kind === 'rtu') {\n  const sessions = context.get('sessions') || {};\n  const id = msg._session.id || 'tcp';\n  const state = flow.get('state') || {};\n  const chunk = Buffer.isBuffer(msg.payload) ? msg.payload : Buffer.from(msg.payload || []);\n  const out = sdm.consumeRtu(sessions[id], chunk, state.image);\n  sessions[id] = out.pending;\n  context.set('sessions', sessions);\n  if (!out.response) return null;\n  msg.payload = out.response;\n  return [null, null, msg];\n}\n\nconst result = sdm.step(flow.get('state'), Object.assign({ now }, event));\nflow.set('state', result.state);\nconst dash = result.state.dashboard || {};\nconst power = result.state.sdmView ? result.state.sdmView.pTotal : null;\nif (result.state.manual) {\n  node.status({ fill: 'blue', shape: 'dot', text: 'Handwert ' + (dash.signed || '') });\n} else if (!result.state.image) {\n  node.status({ fill: 'yellow', shape: 'ring', text: 'warte auf Huawei' });\n} else if (result.state.huaweiError) {\n  node.status({ fill: 'yellow', shape: 'dot', text: 'hält letzten Wert' });\n} else {\n  node.status({ fill: 'green', shape: 'dot', text: (power == null ? '0' : String(Math.round(power))) + ' W' });\n}\n\nif (!result.write || !result.state.image) {\n  return [null, { payload: dash }, null];\n}\n\nconst bytes = result.state.image.slice();\nconst write = (register) => ({\n  payload: { value: bytes.slice(), register, address: 0, disableMsgOutput: 1 }\n});\nreturn [[write('input'), write('holding')], { payload: dash }, null];\n",
-    "outputs": 3,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 520,
-    "y": 260,
-    "wires": [
-      [
-        "sdm-srv"
-      ],
-      [
-        "sdm-ui"
-      ],
-      [
-        "sdm-rtu-out"
-      ]
-    ]
-  },
-  {
-    "id": "sdm-srv",
-    "type": "modbus-server",
-    "z": "sdm-tab",
-    "name": "SDM630 Modbus TCP 1502",
-    "logEnabled": false,
-    "hostname": "0.0.0.0",
-    "serverPort": "1502",
-    "responseDelay": "1",
-    "delayUnit": "ms",
-    "coilsBufferSize": "1000",
-    "holdingBufferSize": "1000",
-    "inputBufferSize": "1000",
-    "discreteBufferSize": "1000",
-    "showErrors": true,
-    "showStatusActivities": false,
-    "x": 820,
-    "y": 180,
-    "wires": [
-      [],
-      [],
-      [],
-      [],
-      []
-    ]
-  },
-  {
-    "id": "sdm-rtu-in",
-    "type": "tcp in",
-    "z": "sdm-tab",
-    "name": "SDM630 RTU über TCP 1503",
-    "server": "server",
-    "host": "",
-    "port": "1503",
-    "datamode": "stream",
-    "datatype": "buffer",
-    "newline": "",
-    "topic": "",
-    "base64": false,
-    "trim": false,
-    "x": 200,
-    "y": 480,
-    "wires": [
-      [
-        "sdm-fn"
-      ]
-    ]
-  },
-  {
-    "id": "sdm-rtu-out",
-    "type": "tcp out",
-    "z": "sdm-tab",
-    "name": "RTU-Antwort",
-    "host": "",
-    "port": "",
-    "beserver": "reply",
-    "base64": false,
-    "end": false,
-    "x": 800,
-    "y": 340,
-    "wires": []
-  },
-  {
-    "id": "sdm-ui",
-    "type": "ui_template",
-    "z": "sdm-tab",
-    "group": "sdm-ui-live",
-    "name": "Messwerte",
-    "order": 1,
-    "width": 12,
-    "height": 9,
-    "format": "<style>\n  .sdm630-panel { font-family: \"Segoe UI\", sans-serif; line-height: 1.35; }\n  .sdm630-panel .headline { font-size: 1.45rem; font-weight: 650; margin: 0 0 0.4rem; }\n  .sdm630-panel .signed { margin: 0 0 0.6rem; color: #334155; }\n  .sdm630-panel .import { color: #9a3412; }\n  .sdm630-panel .export { color: #166534; }\n  .sdm630-panel .idle { color: #334155; }\n  .sdm630-panel .wait, .sdm630-panel .manual { color: #92400e; }\n  .sdm630-panel table { width: 100%; border-collapse: collapse; }\n  .sdm630-panel td { padding: 0.2rem 0.4rem 0.2rem 0; vertical-align: top; }\n  .sdm630-panel td:first-child { color: #475569; width: 38%; }\n  .sdm630-panel .note { margin: 0.6rem 0 0; color: #92400e; }\n</style>\n<div class=\"sdm630-panel\" ng-if=\"msg.payload\">\n  <p class=\"headline\" ng-class=\"msg.payload.tone\">{{msg.payload.headline}}</p>\n  <p class=\"signed\">Register 0x0034: {{msg.payload.signed}}</p>\n  <table>\n    <tr ng-repeat=\"row in msg.payload.rows\">\n      <td>{{row.label}}</td>\n      <td>{{row.value}}</td>\n    </tr>\n  </table>\n  <p class=\"note\" ng-if=\"msg.payload.note\">{{msg.payload.note}}</p>\n</div>\n<div class=\"sdm630-panel\" ng-if=\"!msg.payload\"><p>Warte auf den ersten Zählerwert.</p></div>",
-    "storeOutMessages": true,
-    "fwdInMessages": false,
-    "resendOnRefresh": true,
-    "templateScope": "local",
-    "className": "",
-    "x": 800,
-    "y": 260,
-    "wires": [
-      []
-    ]
-  }
+    {
+        "id": "sdm-tab",
+        "type": "tab",
+        "label": "SDM630 Emulation",
+        "disabled": false,
+        "info": "Liest den DTSU666-H über den bestehenden Huawei-Modbus-Client und antwortet dem Growatt als Eastron SDM630. Die Huawei-Lesung ist absichtlich deaktiviert."
+    },
+    {
+        "id": "0c376023023f3089",
+        "type": "group",
+        "z": "sdm-tab",
+        "name": "SDM630 Emulation",
+        "style": {
+            "stroke": "#ffff00",
+            "fill": "#ffffbf",
+            "label": true,
+            "color": "#000000"
+        },
+        "nodes": [
+            "sdm-read",
+            "sdm-link",
+            "sdm-tick",
+            "sdm-switch",
+            "sdm-power",
+            "sdm-fn",
+            "sdm-srv",
+            "sdm-rtu-in",
+            "sdm-rtu-out",
+            "sdm-ui",
+            "9076c3ed165d9099",
+            "61e4b98a6206caae",
+            "c029e2e8d95316bf",
+            "678bf047d18b2c2e",
+            "a3fc31a46abe60f9"
+        ],
+        "x": 34,
+        "y": 59,
+        "w": 1212,
+        "h": 442
+    },
+    {
+        "id": "sdm-read",
+        "type": "modbus-read",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "Huawei Zähler 37100",
+        "topic": "huawei",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "",
+        "dataType": "HoldingRegister",
+        "adr": "37100",
+        "quantity": "39",
+        "rate": "5",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "server": "70220ecd.1ca1e",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 180,
+        "y": 140,
+        "wires": [
+            [
+                "sdm-fn"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "sdm-link",
+        "type": "link in",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "Bestehende Huawei-Lesung",
+        "links": [],
+        "x": 190,
+        "y": 200,
+        "wires": [
+            [
+                "sdm-fn"
+            ]
+        ]
+    },
+    {
+        "id": "sdm-tick",
+        "type": "inject",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "Alle 2 s nachlegen",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "2",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "tick",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 260,
+        "wires": [
+            [
+                "sdm-fn"
+            ]
+        ]
+    },
+    {
+        "id": "sdm-switch",
+        "type": "ui_switch",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "",
+        "label": "Handwert statt Huawei",
+        "tooltip": "Aktivieren, um die Gesamtleistung von Hand vorzugeben.",
+        "group": "sdm-ui-hand",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "manual",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 170,
+        "y": 320,
+        "wires": [
+            [
+                "sdm-fn"
+            ]
+        ]
+    },
+    {
+        "id": "sdm-power",
+        "type": "ui_template",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "group": "sdm-ui-hand",
+        "name": "Leistung eingeben",
+        "order": 2,
+        "width": 6,
+        "height": 4,
+        "format": "<form ng-submit=\"send({topic:'manualPower', payload:power*1})\" style=\"padding:4px 0\">\n  <label for=\"leistung\" style=\"display:block;margin-bottom:4px\">Leistung in Watt</label>\n  <input id=\"leistung\" type=\"number\" step=\"10\" min=\"-20000\" max=\"20000\" ng-model=\"power\" ng-init=\"power=0\" aria-label=\"Leistung in Watt. Positiv ist Bezug, negativ ist Einspeisung.\" style=\"width:100%;font-size:1.1rem;padding:6px;box-sizing:border-box\">\n  <button type=\"submit\" style=\"margin-top:8px\">Übernehmen</button>\n  <p style=\"margin:6px 0 0;color:#475569\">Positiv ist Bezug, negativ ist Einspeisung. Wirkt nur bei eingeschaltetem Handwert.</p>\n</form>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 180,
+        "y": 380,
+        "wires": [
+            [
+                "sdm-fn"
+            ]
+        ]
+    },
+    {
+        "id": "sdm-fn",
+        "type": "function",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "Huawei nach SDM630",
+        "func": "const sdm = (function (module) {\n'use strict';\n\nconst METER_START = 37100;\nconst METER_COUNT = 39;\nconst IMAGE_REGISTERS = 256;\nconst STALE_AFTER_MS = 15000;\n\nfunction i32(regs, offset) {\n  const hi = regs[offset] & 0xffff;\n  const lo = regs[offset + 1] & 0xffff;\n  return (((hi << 16) | lo) | 0);\n}\n\nfunction i16(value) {\n  const v = value & 0xffff;\n  return (v & 0x8000) ? v - 0x10000 : v;\n}\n\nfunction putFloat(buf, register, value) {\n  const n = Number(value);\n  buf.writeFloatBE(Number.isFinite(n) ? n : 0, register * 2);\n}\n\nfunction readFloat(image, register) {\n  const buf = Buffer.isBuffer(image) ? image : Buffer.from(image);\n  return buf.readFloatBE(register * 2);\n}\n\nfunction emptyState() {\n  return {\n    manual: false,\n    manualPower: 0,\n    manualImportKwh: 0,\n    manualExportKwh: 0,\n    lastManualAt: null,\n    lastHuaweiRegs: null,\n    meterStatus: null,\n    huaweiError: null,\n    huaweiView: null,\n    sdmView: null,\n    image: null,\n    lastGoodAt: null,\n    dashboard: null\n  };\n}\n\nfunction asRegisters(value) {\n  if (Buffer.isBuffer(value)) {\n    if (value.length < 2 || value.length % 2 !== 0) return null;\n    const regs = [];\n    for (let i = 0; i < value.length; i += 2) regs.push(value.readUInt16BE(i));\n    return regs;\n  }\n  if (Array.isArray(value) && value.length > 0 && value.every((n) => Number.isFinite(Number(n)))) {\n    return value.map((n) => Number(n) & 0xffff);\n  }\n  return null;\n}\n\nfunction startAddressOf(msg) {\n  const candidates = [\n    msg && msg.input && msg.input.payload && msg.input.payload.address,\n    msg && msg.input && msg.input.address,\n    msg && msg.payload && msg.payload.address\n  ];\n  for (const candidate of candidates) {\n    if (candidate === undefined || candidate === null || candidate === '') continue;\n    const n = Number(candidate);\n    if (Number.isInteger(n)) return n;\n  }\n  return null;\n}\n\nfunction extractRegisters(msg) {\n  const payload = msg ? msg.payload : null;\n  let regs = null;\n  if (payload && typeof payload === 'object' && !Buffer.isBuffer(payload) && !Array.isArray(payload)) {\n    regs = asRegisters(payload.data) || asRegisters(payload.buffer) || asRegisters(payload.values) || asRegisters(payload.payload);\n  }\n  if (!regs) regs = asRegisters(payload);\n  if (!regs && msg && Array.isArray(msg.values)) regs = asRegisters(msg.values);\n  if (!regs) throw new Error('Zählerblock nicht erkannt');\n\n  const start = startAddressOf(msg);\n  if (start == null) {\n    if (regs.length < METER_COUNT) throw new Error('Zu wenig Register, 39 ab 37100 erwartet');\n    return regs.slice(0, METER_COUNT);\n  }\n  const offset = METER_START - start;\n  if (offset < 0 || offset + METER_COUNT > regs.length) {\n    throw new Error('Block 37100 liegt nicht in der Lesung (Start ' + start + ', Länge ' + regs.length + ')');\n  }\n  return regs.slice(offset, offset + METER_COUNT);\n}\n\nfunction decodeHuawei(regs) {\n  const v = [i32(regs, 1) / 10, i32(regs, 3) / 10, i32(regs, 5) / 10];\n  const i = [i32(regs, 7) / 100, i32(regs, 9) / 100, i32(regs, 11) / 100];\n  const pPhaseRaw = [i32(regs, 32), i32(regs, 34), i32(regs, 36)];\n  const pPhase = pPhaseRaw.map((raw, idx) => {\n    if (raw !== 0) return raw;\n    if (i[idx] !== 0 && v[idx] !== 0) return v[idx] * i[idx];\n    return 0;\n  });\n  const pTotalRaw = i32(regs, 13);\n  const vll = [i32(regs, 26) / 10, i32(regs, 28) / 10, i32(regs, 30) / 10];\n  return {\n    status: regs[0] & 0xffff,\n    v,\n    i,\n    pPhase,\n    pTotal: pTotalRaw !== 0 ? pTotalRaw : pPhase.reduce((sum, p) => sum + p, 0),\n    qTotal: i32(regs, 15),\n    pf: i16(regs[17]) / 1000,\n    freq: i16(regs[18]) / 100 || 50,\n    exportKwh: i32(regs, 19) / 100,\n    importKwh: i32(regs, 21) / 100,\n    vll\n  };\n}\n\nfunction clampPf(value) {\n  if (!Number.isFinite(value)) return 0;\n  return Math.max(-1, Math.min(1, value));\n}\n\nfunction toSdm(huawei) {\n  const pPhase = huawei.pPhase.map((p) => -p);\n  const current = huawei.i.map((a) => -a);\n  const pTotal = -huawei.pTotal;\n  const qTotal = -huawei.qTotal;\n  const pf = clampPf(huawei.pf === 0 ? (pTotal === 0 ? 1 : Math.sign(pTotal)) : -huawei.pf);\n  const vaPhase = pPhase.map((p, idx) => {\n    const apparent = Math.abs(huawei.v[idx] * huawei.i[idx]);\n    return apparent || Math.abs(p);\n  });\n  const sqrt3 = Math.sqrt(3);\n  return {\n    v: huawei.v.slice(),\n    i: current,\n    pPhase,\n    pTotal,\n    qTotal,\n    vaPhase,\n    vaTotal: vaPhase.reduce((sum, va) => sum + va, 0),\n    pf,\n    pfPhase: pPhase.map((p) => (p === 0 ? 0 : Math.sign(p) * (Math.abs(pf) || 1))),\n    freq: huawei.freq,\n    importKwh: huawei.importKwh,\n    exportKwh: huawei.exportKwh,\n    vAvg: (huawei.v[0] + huawei.v[1] + huawei.v[2]) / 3,\n    iSum: current[0] + current[1] + current[2],\n    iAvg: (current[0] + current[1] + current[2]) / 3,\n    vll: huawei.vll.map((volts, idx) => volts || huawei.v[idx] * sqrt3),\n    iN: 0\n  };\n}\n\nfunction buildImage(sdm) {\n  const buf = Buffer.alloc(IMAGE_REGISTERS * 2);\n  putFloat(buf, 0x0000, sdm.v[0]);\n  putFloat(buf, 0x0002, sdm.v[1]);\n  putFloat(buf, 0x0004, sdm.v[2]);\n  putFloat(buf, 0x0006, sdm.i[0]);\n  putFloat(buf, 0x0008, sdm.i[1]);\n  putFloat(buf, 0x000a, sdm.i[2]);\n  putFloat(buf, 0x000c, sdm.pPhase[0]);\n  putFloat(buf, 0x000e, sdm.pPhase[1]);\n  putFloat(buf, 0x0010, sdm.pPhase[2]);\n  putFloat(buf, 0x0012, sdm.vaPhase[0]);\n  putFloat(buf, 0x0014, sdm.vaPhase[1]);\n  putFloat(buf, 0x0016, sdm.vaPhase[2]);\n  putFloat(buf, 0x001e, sdm.pfPhase[0]);\n  putFloat(buf, 0x0020, sdm.pfPhase[1]);\n  putFloat(buf, 0x0022, sdm.pfPhase[2]);\n  putFloat(buf, 0x002a, sdm.vAvg);\n  putFloat(buf, 0x002e, sdm.iAvg);\n  putFloat(buf, 0x0030, sdm.iSum);\n  putFloat(buf, 0x0034, sdm.pTotal);\n  putFloat(buf, 0x0038, sdm.vaTotal);\n  putFloat(buf, 0x003c, sdm.qTotal);\n  putFloat(buf, 0x003e, sdm.pf);\n  putFloat(buf, 0x0046, sdm.freq);\n  putFloat(buf, 0x0048, sdm.importKwh);\n  putFloat(buf, 0x004a, sdm.exportKwh);\n  putFloat(buf, 0x00c8, sdm.vll[0]);\n  putFloat(buf, 0x00ca, sdm.vll[1]);\n  putFloat(buf, 0x00cc, sdm.vll[2]);\n  putFloat(buf, 0x00e0, sdm.iN);\n  return buf;\n}\n\nfunction manualSdm(state, now) {\n  if (state.lastManualAt != null) {\n    let dtMs = now - state.lastManualAt;\n    if (dtMs < 0) dtMs = 0;\n    if (dtMs > 60000) dtMs = 60000;\n    const kwh = Math.abs(state.manualPower) * (dtMs / 3600000) / 1000;\n    if (state.manualPower > 0) state.manualImportKwh += kwh;\n    else if (state.manualPower < 0) state.manualExportKwh += kwh;\n  }\n  state.lastManualAt = now;\n  const voltage = [230, 230, 230];\n  const pPhase = [state.manualPower / 3, state.manualPower / 3, state.manualPower / 3];\n  const current = pPhase.map((p, idx) => p / voltage[idx]);\n  const sign = state.manualPower === 0 ? 1 : Math.sign(state.manualPower);\n  return {\n    v: voltage,\n    i: current,\n    pPhase,\n    pTotal: state.manualPower,\n    qTotal: 0,\n    vaPhase: pPhase.map((p) => Math.abs(p)),\n    vaTotal: Math.abs(state.manualPower),\n    pf: sign,\n    pfPhase: pPhase.map((p) => (p === 0 ? 0 : Math.sign(p))),\n    freq: 50,\n    importKwh: state.manualImportKwh,\n    exportKwh: state.manualExportKwh,\n    vAvg: 230,\n    iSum: current.reduce((sum, a) => sum + a, 0),\n    iAvg: current.reduce((sum, a) => sum + a, 0) / 3,\n    vll: voltage.map((v) => v * Math.sqrt(3)),\n    iN: 0\n  };\n}\n\nfunction fmt(value, digits) {\n  if (!Number.isFinite(value)) return '–';\n  const negative = value < 0;\n  const fixed = Math.abs(value).toFixed(digits);\n  const parts = fixed.split('.');\n  const grouped = parts[0].replace(/\\B(?=(\\d{3})+(?!\\d))/g, '.');\n  const body = digits ? grouped + ',' + parts[1] : grouped;\n  return negative ? '-' + body : body;\n}\n\nfunction direction(power) {\n  if (power > 25) return 'Bezug';\n  if (power < -25) return 'Einspeisung';\n  return 'ausgeglichen';\n}\n\nfunction phaseText(voltage, current, power) {\n  return fmt(voltage, 1) + ' V · ' + fmt(current, 2) + ' A · ' + fmt(power, 0) + ' W';\n}\n\nfunction makeDashboard(state, now) {\n  const ageSec = state.lastGoodAt == null ? null : Math.max(0, Math.round((now - state.lastGoodAt) / 1000));\n  const stale = !state.manual && !!state.image && (state.huaweiError || (now - state.lastGoodAt) > STALE_AFTER_MS);\n  const sdm = state.sdmView;\n  const huawei = state.huaweiView;\n  const rows = [];\n  if (huawei) {\n    rows.push({ label: 'Huawei gesamt', value: fmt(huawei.pTotal, 0) + ' W (positiv = Einspeisung)' });\n    huawei.v.forEach((volts, idx) => {\n      rows.push({ label: 'Huawei L' + (idx + 1), value: phaseText(volts, huawei.i[idx], huawei.pPhase[idx]) });\n    });\n  }\n  if (sdm) {\n    rows.push({ label: 'SDM630 gesamt', value: fmt(sdm.pTotal, 0) + ' W (positiv = Bezug)' });\n    sdm.v.forEach((volts, idx) => {\n      rows.push({ label: 'SDM630 L' + (idx + 1), value: phaseText(volts, sdm.i[idx], sdm.pPhase[idx]) });\n    });\n    rows.push({ label: 'Frequenz', value: fmt(sdm.freq, 2) + ' Hz' });\n    rows.push({ label: 'Import', value: fmt(sdm.importKwh, 2) + ' kWh' });\n    rows.push({ label: 'Export', value: fmt(sdm.exportKwh, 2) + ' kWh' });\n    rows.push({ label: 'Leistungsfaktor', value: fmt(sdm.pf, 2) });\n  }\n  let note = '';\n  if (!state.image) note = 'Noch kein gültiger Zählerwert. Der SDM630-Slave bleibt auf 0, bis der Huawei Status „normal“ meldet.';\n  else if (state.manual) note = 'Handwert ist aktiv. Der Growatt sieht diese Leistung, nicht den Huawei.';\n  else if (state.huaweiError) note = state.huaweiError;\n  else if (stale) note = 'Huawei-Lesung ist älter als 15 s. Der letzte gültige Wert bleibt stehen.';\n  else note = 'Zähler normal' + (ageSec == null ? '' : ', Alter ' + ageSec + ' s') + '.';\n\n  const power = sdm ? sdm.pTotal : null;\n  return {\n    tone: !sdm ? 'wait' : state.manual ? 'manual' : stale ? 'wait' : power > 25 ? 'import' : power < -25 ? 'export' : 'idle',\n    headline: !sdm ? 'Warte auf den Huawei-Zähler' : (state.manual ? 'Handwert · ' : '') + direction(power) + ' · ' + fmt(power, 0) + ' W',\n    signed: sdm ? fmt(power, 0) + ' W' : '–',\n    rows,\n    note\n  };\n}\n\nfunction publish(state, sdm, now) {\n  state.sdmView = sdm;\n  state.image = Array.from(buildImage(sdm));\n  state.lastGoodAt = now;\n}\n\nfunction applyHuawei(state, msg) {\n  const regs = extractRegisters(msg);\n  const decoded = decodeHuawei(regs);\n  state.meterStatus = decoded.status;\n  state.huaweiView = {\n    v: decoded.v,\n    i: decoded.i,\n    pPhase: decoded.pPhase,\n    pTotal: decoded.pTotal,\n    freq: decoded.freq,\n    importKwh: decoded.importKwh,\n    exportKwh: decoded.exportKwh\n  };\n  if (decoded.status !== 1) {\n    state.huaweiError = 'Zählerstatus ' + decoded.status + ' (nicht normal). Der letzte gültige SDM630-Wert bleibt stehen.';\n    return;\n  }\n  state.huaweiError = null;\n  state.lastHuaweiRegs = regs.map((n) => n & 0xffff);\n  if (!state.manual) publish(state, toSdm(decoded), state._now);\n}\n\nfunction step(rawState, event) {\n  const state = Object.assign(emptyState(), rawState || {});\n  const now = event.now == null ? Date.now() : event.now;\n  state._now = now;\n\n  if (event.kind === 'manualFlag') {\n    state.manual = !!event.value;\n    if (!state.manual) state.lastManualAt = null;\n  } else if (event.kind === 'manualPower') {\n    state.manualPower = Number(event.value) || 0;\n  } else if (event.kind === 'huawei') {\n    try {\n      applyHuawei(state, event.msg);\n    } catch (err) {\n      state.huaweiError = err.message;\n    }\n  } else if (event.kind === 'huaweiError') {\n    state.huaweiError = event.error || 'Lesefehler Huawei';\n  }\n\n  if (event.kind === 'manualFlag' && !state.manual && state.lastHuaweiRegs && state.meterStatus === 1 && !state.huaweiError) {\n    publish(state, toSdm(decodeHuawei(state.lastHuaweiRegs)), now);\n  }\n\n  let write = false;\n  if (state.manual) {\n    publish(state, manualSdm(state, now), now);\n    write = true;\n  } else if (event.kind === 'huawei' && state.meterStatus === 1 && !state.huaweiError) {\n    write = true;\n  } else if (event.kind === 'tick' && state.image) {\n    write = true;\n  }\n\n  delete state._now;\n  state.dashboard = makeDashboard(state, now);\n  return { state, write };\n}\n\nfunction crc16(buffer) {\n  let crc = 0xffff;\n  for (let n = 0; n < buffer.length; n++) {\n    crc ^= buffer[n];\n    for (let bit = 0; bit < 8; bit++) {\n      const lsb = crc & 1;\n      crc >>>= 1;\n      if (lsb) crc ^= 0xa001;\n    }\n  }\n  return crc & 0xffff;\n}\n\nfunction exceptionFrame(slave, fc, code) {\n  const resp = Buffer.alloc(5);\n  resp[0] = slave;\n  resp[1] = fc | 0x80;\n  resp[2] = code;\n  const crc = crc16(resp.subarray(0, 3));\n  resp[3] = crc & 0xff;\n  resp[4] = (crc >> 8) & 0xff;\n  return resp;\n}\n\nfunction handleRtuRequest(image, frame) {\n  if (!frame || frame.length < 8) return { consume: 0, response: null };\n  const crc = crc16(frame.subarray(0, 6));\n  const got = frame[6] | (frame[7] << 8);\n  if (crc !== got) return { consume: 1, response: null };\n  const slave = frame[0];\n  const fc = frame[1];\n  const address = (frame[2] << 8) | frame[3];\n  const quantity = (frame[4] << 8) | frame[5];\n  if (slave !== 2) return { consume: 8, response: null };\n  if (fc !== 3 && fc !== 4) return { consume: 8, response: exceptionFrame(slave, fc, 1) };\n  if (quantity < 1 || quantity > 125) return { consume: 8, response: exceptionFrame(slave, fc, 3) };\n  const source = image && image.length ? Buffer.from(image) : Buffer.alloc(IMAGE_REGISTERS * 2);\n  const start = address * 2;\n  const byteLen = quantity * 2;\n  if (start < 0 || start + byteLen > source.length) return { consume: 8, response: exceptionFrame(slave, fc, 2) };\n  const resp = Buffer.alloc(3 + byteLen + 2);\n  resp[0] = slave;\n  resp[1] = fc;\n  resp[2] = byteLen;\n  source.copy(resp, 3, start, start + byteLen);\n  const outCrc = crc16(resp.subarray(0, resp.length - 2));\n  resp[resp.length - 2] = outCrc & 0xff;\n  resp[resp.length - 1] = (outCrc >> 8) & 0xff;\n  return { consume: 8, response: resp };\n}\n\nfunction consumeRtu(pending, chunk, image) {\n  let buf = pending && pending.length ? Buffer.concat([Buffer.from(pending), Buffer.from(chunk)]) : Buffer.from(chunk);\n  const responses = [];\n  while (buf.length >= 8) {\n    const result = handleRtuRequest(image, buf);\n    if (!result.consume) break;\n    buf = buf.subarray(result.consume);\n    if (result.response) responses.push(result.response);\n  }\n  if (buf.length > 64) buf = buf.subarray(buf.length - 64);\n  return {\n    pending: Array.from(buf),\n    response: responses.length ? Buffer.concat(responses) : null\n  };\n}\n\nfunction classify(msg) {\n  if (msg && msg._session && msg._session.type === 'tcp') return { kind: 'rtu' };\n  if (!msg || msg.topic === 'tick') return { kind: 'tick' };\n  if (msg.topic === 'manual') {\n    return { kind: 'manualFlag', value: msg.payload === true || msg.payload === 'true' || msg.payload === 1 };\n  }\n  if (msg.topic === 'manualPower') return { kind: 'manualPower', value: Number(msg.payload) };\n  return { kind: 'huawei', msg };\n}\n\nmodule.exports = {\n  METER_START,\n  METER_COUNT,\n  IMAGE_REGISTERS,\n  STALE_AFTER_MS,\n  emptyState,\n  extractRegisters,\n  decodeHuawei,\n  toSdm,\n  buildImage,\n  readFloat,\n  step,\n  crc16,\n  handleRtuRequest,\n  consumeRtu,\n  classify,\n  makeDashboard\n};\n\nreturn module.exports;\n})({ exports: {} });\nconst event = sdm.classify(msg);\nconst now = Date.now();\n\nif (event.kind === 'rtu') {\n  const sessions = context.get('sessions') || {};\n  const id = msg._session.id || 'tcp';\n  const state = flow.get('state') || {};\n  const chunk = Buffer.isBuffer(msg.payload) ? msg.payload : Buffer.from(msg.payload || []);\n  const out = sdm.consumeRtu(sessions[id], chunk, state.image);\n  sessions[id] = out.pending;\n  context.set('sessions', sessions);\n  if (!out.response) return null;\n  msg.payload = out.response;\n  return [null, null, msg];\n}\n\nconst result = sdm.step(flow.get('state'), Object.assign({ now }, event));\nflow.set('state', result.state);\nconst dash = result.state.dashboard || {};\nconst power = result.state.sdmView ? result.state.sdmView.pTotal : null;\nif (result.state.manual) {\n  node.status({ fill: 'blue', shape: 'dot', text: 'Handwert ' + (dash.signed || '') });\n} else if (!result.state.image) {\n  node.status({ fill: 'yellow', shape: 'ring', text: 'warte auf Huawei' });\n} else if (result.state.huaweiError) {\n  node.status({ fill: 'yellow', shape: 'dot', text: 'hält letzten Wert' });\n} else {\n  node.status({ fill: 'green', shape: 'dot', text: (power == null ? '0' : String(Math.round(power))) + ' W' });\n}\n\nif (!result.write || !result.state.image) {\n  return [null, { payload: dash }, null];\n}\n\nconst bytes = result.state.image.slice();\nconst write = (register) => ({\n  payload: { value: bytes.slice(), register, address: 0, disableMsgOutput: 1 }\n});\nreturn [[write('input'), write('holding')], { payload: dash }, null];\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 240,
+        "wires": [
+            [
+                "sdm-srv"
+            ],
+            [
+                "sdm-ui"
+            ],
+            [
+                "sdm-rtu-out"
+            ]
+        ]
+    },
+    {
+        "id": "sdm-srv",
+        "type": "modbus-server",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "SDM630 Modbus TCP 1502",
+        "logEnabled": true,
+        "hostname": "0.0.0.0",
+        "serverPort": "1502",
+        "responseDelay": "1",
+        "delayUnit": "ms",
+        "coilsBufferSize": "1000",
+        "holdingBufferSize": "1000",
+        "inputBufferSize": "1000",
+        "discreteBufferSize": "1000",
+        "showErrors": true,
+        "showStatusActivities": true,
+        "x": 820,
+        "y": 140,
+        "wires": [
+            [
+                "9076c3ed165d9099"
+            ],
+            [
+                "61e4b98a6206caae"
+            ],
+            [
+                "c029e2e8d95316bf"
+            ],
+            [
+                "678bf047d18b2c2e"
+            ],
+            [
+                "a3fc31a46abe60f9"
+            ]
+        ]
+    },
+    {
+        "id": "sdm-rtu-in",
+        "type": "tcp in",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "SDM630 RTU über TCP 1503",
+        "server": "server",
+        "host": "",
+        "port": "1503",
+        "datamode": "stream",
+        "datatype": "buffer",
+        "newline": "",
+        "topic": "",
+        "trim": false,
+        "base64": false,
+        "x": 200,
+        "y": 460,
+        "wires": [
+            [
+                "sdm-fn"
+            ]
+        ]
+    },
+    {
+        "id": "sdm-rtu-out",
+        "type": "tcp out",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "RTU-Antwort",
+        "host": "",
+        "port": "",
+        "beserver": "reply",
+        "base64": false,
+        "end": false,
+        "x": 810,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "sdm-ui",
+        "type": "ui_template",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "group": "sdm-ui-live",
+        "name": "Messwerte",
+        "order": 1,
+        "width": 12,
+        "height": 9,
+        "format": "<style>\n  .sdm630-panel { font-family: \"Segoe UI\", sans-serif; line-height: 1.35; }\n  .sdm630-panel .headline { font-size: 1.45rem; font-weight: 650; margin: 0 0 0.4rem; }\n  .sdm630-panel .signed { margin: 0 0 0.6rem; color: #334155; }\n  .sdm630-panel .import { color: #9a3412; }\n  .sdm630-panel .export { color: #166534; }\n  .sdm630-panel .idle { color: #334155; }\n  .sdm630-panel .wait, .sdm630-panel .manual { color: #92400e; }\n  .sdm630-panel table { width: 100%; border-collapse: collapse; }\n  .sdm630-panel td { padding: 0.2rem 0.4rem 0.2rem 0; vertical-align: top; }\n  .sdm630-panel td:first-child { color: #475569; width: 38%; }\n  .sdm630-panel .note { margin: 0.6rem 0 0; color: #92400e; }\n</style>\n<div class=\"sdm630-panel\" ng-if=\"msg.payload\">\n  <p class=\"headline\" ng-class=\"msg.payload.tone\">{{msg.payload.headline}}</p>\n  <p class=\"signed\">Register 0x0034: {{msg.payload.signed}}</p>\n  <table>\n    <tr ng-repeat=\"row in msg.payload.rows\">\n      <td>{{row.label}}</td>\n      <td>{{row.value}}</td>\n    </tr>\n  </table>\n  <p class=\"note\" ng-if=\"msg.payload.note\">{{msg.payload.note}}</p>\n</div>\n<div class=\"sdm630-panel\" ng-if=\"!msg.payload\"><p>Warte auf den ersten Zählerwert.</p></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 800,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9076c3ed165d9099",
+        "type": "debug",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "debug 27",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "61e4b98a6206caae",
+        "type": "debug",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "debug 29",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "c029e2e8d95316bf",
+        "type": "debug",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "debug 30",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "678bf047d18b2c2e",
+        "type": "debug",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "debug 31",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "a3fc31a46abe60f9",
+        "type": "debug",
+        "z": "sdm-tab",
+        "g": "0c376023023f3089",
+        "name": "debug 32",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "4939e6d247dd7b49",
+        "type": "modbus-getter",
+        "z": "sdm-tab",
+        "name": "Get \"Phase 1 current\" (Unit 2 - FC 3 - Addr 30007)",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "2",
+        "dataType": "HoldingRegister",
+        "adr": "6",
+        "quantity": "2",
+        "server": "e7de758a680737d0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 510,
+        "y": 760,
+        "wires": [
+            [],
+            [
+                "4f5400620d3ac790"
+            ]
+        ]
+    },
+    {
+        "id": "f47adf86136f6b07",
+        "type": "inject",
+        "z": "sdm-tab",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 760,
+        "wires": [
+            [
+                "4939e6d247dd7b49"
+            ]
+        ]
+    },
+    {
+        "id": "938675364975f961",
+        "type": "comment",
+        "z": "sdm-tab",
+        "name": "SDM630 Spec - Start-Adresse 30001 - \"SDM630_MODBUS_Protocol.pdf\"",
+        "info": "",
+        "x": 740,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "bd63b9351bd94ea5",
+        "type": "modbus-getter",
+        "z": "sdm-tab",
+        "name": "Get \"Phase 2 current\" (Unit 2 - FC 3 - Addr 30009)",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "2",
+        "dataType": "HoldingRegister",
+        "adr": "8",
+        "quantity": "2",
+        "server": "e7de758a680737d0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 510,
+        "y": 820,
+        "wires": [
+            [],
+            [
+                "488857ce94335c09"
+            ]
+        ]
+    },
+    {
+        "id": "82aeb34e8e1869e4",
+        "type": "modbus-getter",
+        "z": "sdm-tab",
+        "name": "Get \"Phase 3 current\" (Unit 2 - FC 3 - Addr 30011)",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "2",
+        "dataType": "HoldingRegister",
+        "adr": "10",
+        "quantity": "2",
+        "server": "e7de758a680737d0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 510,
+        "y": 880,
+        "wires": [
+            [],
+            [
+                "20fee531c77ba820"
+            ]
+        ]
+    },
+    {
+        "id": "05bca8b262bc8534",
+        "type": "inject",
+        "z": "sdm-tab",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 820,
+        "wires": [
+            [
+                "bd63b9351bd94ea5"
+            ]
+        ]
+    },
+    {
+        "id": "05fd50255ffe07c3",
+        "type": "inject",
+        "z": "sdm-tab",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 880,
+        "wires": [
+            [
+                "82aeb34e8e1869e4"
+            ]
+        ]
+    },
+    {
+        "id": "7d23e5e151a12dd1",
+        "type": "function",
+        "z": "sdm-tab",
+        "name": "convert buffer to value",
+        "func": "/*\nconst data = msg.payload?.data ?? msg.payload ?? msg.responseBuffer?.data;\nif (!Array.isArray(data) || data.length < 2) {\n    node.error('Erwarte mindestens 2 Register', msg);\n    return null;\n}\n\nconst buf = Buffer.alloc(4);\nbuf.writeUInt16BE(data[0] & 0xffff, 0);\nbuf.writeUInt16BE(data[1] & 0xffff, 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;\n*/\n\n\nconst buf = Buffer.from(msg.payload.buffer);\nmsg.payload = buf.readFloatBE(0);\n\nnode.status({ fill: 'green', shape: 'dot', text: (msg.payload == null ? '0' : String(Math.round(msg.payload))) + ' V' });\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 580,
+        "wires": [
+            [
+                "1ef0eb3069c72ff0"
+            ]
+        ]
+    },
+    {
+        "id": "90eedfcfdf1d5ab6",
+        "type": "modbus-getter",
+        "z": "sdm-tab",
+        "name": "Get \"Phase 1 Volts\" (Unit 2 - FC 3 - Addr 30001)",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "2",
+        "dataType": "HoldingRegister",
+        "adr": "0",
+        "quantity": "2",
+        "server": "e7de758a680737d0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 500,
+        "y": 580,
+        "wires": [
+            [],
+            [
+                "7d23e5e151a12dd1"
+            ]
+        ]
+    },
+    {
+        "id": "35b4763eedcb90a0",
+        "type": "modbus-getter",
+        "z": "sdm-tab",
+        "name": "Get \"Phase 1 Volts\" (Unit 2 - FC 3 - Addr 30001)",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "2",
+        "dataType": "HoldingRegister",
+        "adr": "0",
+        "quantity": "2",
+        "server": "e7de758a680737d0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 500,
+        "y": 640,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "726a72f6df390383",
+        "type": "modbus-getter",
+        "z": "sdm-tab",
+        "name": "Get \"Phase 2 Volts\" (Unit 2 - FC 3 - Addr 30003)",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "2",
+        "dataType": "HoldingRegister",
+        "adr": "2",
+        "quantity": "2",
+        "server": "e7de758a680737d0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 500,
+        "y": 640,
+        "wires": [
+            [],
+            [
+                "13e60112253372fb"
+            ]
+        ]
+    },
+    {
+        "id": "a7b16e37d2c19d6f",
+        "type": "modbus-getter",
+        "z": "sdm-tab",
+        "name": "Get \"Phase 3 Volts\" (Unit 2 - FC 3 - Addr 30005)",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "2",
+        "dataType": "HoldingRegister",
+        "adr": "4",
+        "quantity": "2",
+        "server": "e7de758a680737d0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 500,
+        "y": 700,
+        "wires": [
+            [
+                "1555e81c2887f4a0"
+            ],
+            [
+                "ed615662d56cb8a1"
+            ]
+        ]
+    },
+    {
+        "id": "1ef0eb3069c72ff0",
+        "type": "debug",
+        "z": "sdm-tab",
+        "name": "debug 34",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "3b5a3691ebf5d167",
+        "type": "inject",
+        "z": "sdm-tab",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 580,
+        "wires": [
+            [
+                "90eedfcfdf1d5ab6"
+            ]
+        ]
+    },
+    {
+        "id": "13e60112253372fb",
+        "type": "function",
+        "z": "sdm-tab",
+        "name": "convert buffer to value",
+        "func": "/*\nconst data = msg.payload?.data ?? msg.payload ?? msg.responseBuffer?.data;\nif (!Array.isArray(data) || data.length < 2) {\n    node.error('Erwarte mindestens 2 Register', msg);\n    return null;\n}\n\nconst buf = Buffer.alloc(4);\nbuf.writeUInt16BE(data[0] & 0xffff, 0);\nbuf.writeUInt16BE(data[1] & 0xffff, 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;\n*/\n\n\nconst buf = Buffer.from(msg.payload.buffer);\nmsg.payload = buf.readFloatBE(0);\n\nnode.status({ fill: 'green', shape: 'dot', text: (msg.payload == null ? '0' : String(Math.round(msg.payload))) + ' V' });\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 640,
+        "wires": [
+            [
+                "5c2e9ff03a215e33"
+            ]
+        ]
+    },
+    {
+        "id": "5c2e9ff03a215e33",
+        "type": "debug",
+        "z": "sdm-tab",
+        "name": "debug 35",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "ed615662d56cb8a1",
+        "type": "function",
+        "z": "sdm-tab",
+        "name": "convert buffer to value",
+        "func": "/*\nconst data = msg.payload?.data ?? msg.payload ?? msg.responseBuffer?.data;\nif (!Array.isArray(data) || data.length < 2) {\n    node.error('Erwarte mindestens 2 Register', msg);\n    return null;\n}\n\nconst buf = Buffer.alloc(4);\nbuf.writeUInt16BE(data[0] & 0xffff, 0);\nbuf.writeUInt16BE(data[1] & 0xffff, 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;\n*/\n\n\nconst buf = Buffer.from(msg.payload.buffer);\nmsg.payload = buf.readFloatBE(0);\n\nnode.status({ fill: 'green', shape: 'dot', text: (msg.payload == null ? '0' : String(Math.round(msg.payload))) + ' V' });\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 700,
+        "wires": [
+            [
+                "1555e81c2887f4a0"
+            ]
+        ]
+    },
+    {
+        "id": "1555e81c2887f4a0",
+        "type": "debug",
+        "z": "sdm-tab",
+        "name": "debug 48",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "d5c07b3cba21d5d3",
+        "type": "inject",
+        "z": "sdm-tab",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 640,
+        "wires": [
+            [
+                "726a72f6df390383"
+            ]
+        ]
+    },
+    {
+        "id": "87551604b9f759be",
+        "type": "inject",
+        "z": "sdm-tab",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 700,
+        "wires": [
+            [
+                "a7b16e37d2c19d6f"
+            ]
+        ]
+    },
+    {
+        "id": "4f5400620d3ac790",
+        "type": "function",
+        "z": "sdm-tab",
+        "name": "convert buffer to value",
+        "func": "/*\nconst data = msg.payload?.data ?? msg.payload ?? msg.responseBuffer?.data;\nif (!Array.isArray(data) || data.length < 2) {\n    node.error('Erwarte mindestens 2 Register', msg);\n    return null;\n}\n\nconst buf = Buffer.alloc(4);\nbuf.writeUInt16BE(data[0] & 0xffff, 0);\nbuf.writeUInt16BE(data[1] & 0xffff, 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;\n*/\n\n\nconst buf = Buffer.from(msg.payload.buffer);\nmsg.payload = buf.readFloatBE(0);\n\nnode.status({ fill: 'green', shape: 'dot', text: (msg.payload == null ? '0' : String(Math.round(msg.payload))) + ' A' });\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 760,
+        "wires": [
+            [
+                "c2376a98473d0f6c"
+            ]
+        ]
+    },
+    {
+        "id": "c2376a98473d0f6c",
+        "type": "debug",
+        "z": "sdm-tab",
+        "name": "debug 33",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "488857ce94335c09",
+        "type": "function",
+        "z": "sdm-tab",
+        "name": "convert buffer to value",
+        "func": "/*\nconst data = msg.payload?.data ?? msg.payload ?? msg.responseBuffer?.data;\nif (!Array.isArray(data) || data.length < 2) {\n    node.error('Erwarte mindestens 2 Register', msg);\n    return null;\n}\n\nconst buf = Buffer.alloc(4);\nbuf.writeUInt16BE(data[0] & 0xffff, 0);\nbuf.writeUInt16BE(data[1] & 0xffff, 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;\n*/\n\n\nconst buf = Buffer.from(msg.payload.buffer);\nmsg.payload = buf.readFloatBE(0);\n\nnode.status({ fill: 'green', shape: 'dot', text: (msg.payload == null ? '0' : String(Math.round(msg.payload))) + ' A' });\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 820,
+        "wires": [
+            [
+                "da7fdcb2970a278a"
+            ]
+        ]
+    },
+    {
+        "id": "da7fdcb2970a278a",
+        "type": "debug",
+        "z": "sdm-tab",
+        "name": "debug 34",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "20fee531c77ba820",
+        "type": "function",
+        "z": "sdm-tab",
+        "name": "convert buffer to value",
+        "func": "/*\nconst data = msg.payload?.data ?? msg.payload ?? msg.responseBuffer?.data;\nif (!Array.isArray(data) || data.length < 2) {\n    node.error('Erwarte mindestens 2 Register', msg);\n    return null;\n}\n\nconst buf = Buffer.alloc(4);\nbuf.writeUInt16BE(data[0] & 0xffff, 0);\nbuf.writeUInt16BE(data[1] & 0xffff, 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;\n*/\n\n\nconst buf = Buffer.from(msg.payload.buffer);\nmsg.payload = buf.readFloatBE(0);\n\nnode.status({ fill: 'green', shape: 'dot', text: (msg.payload == null ? '0' : String(Math.round(msg.payload))) + ' A' });\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 880,
+        "wires": [
+            [
+                "e4d7c036ce4ddd19"
+            ]
+        ]
+    },
+    {
+        "id": "e4d7c036ce4ddd19",
+        "type": "debug",
+        "z": "sdm-tab",
+        "name": "debug 35",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "9948acfd460bfbcc",
+        "type": "inject",
+        "z": "sdm-tab",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 540,
+        "wires": [
+            [
+                "90eedfcfdf1d5ab6",
+                "726a72f6df390383",
+                "a7b16e37d2c19d6f",
+                "4939e6d247dd7b49",
+                "bd63b9351bd94ea5",
+                "82aeb34e8e1869e4"
+            ]
+        ]
+    },
+    {
+        "id": "70220ecd.1ca1e",
+        "type": "modbus-client",
+        "name": "WLAN-FE",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": true,
+        "queueLogEnabled": true,
+        "failureLogEnabled": true,
+        "tcpHost": "192.168.1.23",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 5000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "sdm-ui-hand",
+        "type": "ui_group",
+        "name": "Handwert",
+        "tab": "203dce8fdd8ea7c9",
+        "order": 1,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "sdm-ui-live",
+        "type": "ui_group",
+        "name": "Messwerte",
+        "tab": "203dce8fdd8ea7c9",
+        "order": 2,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "e7de758a680737d0",
+        "type": "modbus-client",
+        "name": "SDM630-Emulation (1502)",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "192.168.1.2",
+        "tcpPort": "1502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": 9600,
+        "serialDatabits": 8,
+        "serialStopbits": 1,
+        "serialParity": "none",
+        "serialConnectionDelay": 100,
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 2,
+        "commandDelay": 1,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "203dce8fdd8ea7c9",
+        "type": "ui_tab",
+        "name": "Huawei",
+        "icon": "wb_sunny",
+        "order": 9,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "5e796ca47fcb0eac",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-modbus": "5.60.2",
+            "node-red-dashboard": "3.6.6"
+        }
+    }
 ]
