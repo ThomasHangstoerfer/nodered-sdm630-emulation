@@ -8,7 +8,9 @@ Es wird keine zweite Node-RED-Instanz gestartet und keine zweite TCP-Verbindung 
 
 Voraussetzung ist `node-red-contrib-modbus`, das in der Instanz bereits läuft. Die Anzeige braucht zusätzlich `node-red-dashboard`.
 
-1. In Node-RED **Import** wählen und [flows/sdm630.json](flows/sdm630.json) einfügen.
+1. In Node-RED **Import** wählen und [flows/sdm630.json](flows/sdm630.json) einfügen. Der Flow enthält keine Dashboard-Basis. Theme, Titel und Raster der bestehenden Anzeige bleiben unverändert. Der Reiter SDM630 erscheint unter `/ui` hinten.
+
+Wurde eine ältere Fassung importiert und die Oberfläche sieht anders aus: Menü, Konfigurationsknoten, den Knoten `ui_base` mit dem Site-Namen **SDM630 Emulation** löschen und deployen. In der Dashboard-Seitenleiste den Reiter SDM630 nach hinten ziehen. Den Flow nicht noch einmal vollständig importieren, sonst liegen die Knoten doppelt.
 2. Die neue Lesung **Huawei Zähler 37100** ist deaktiviert und zeigt auf den Client „Platzhalter, nicht verbinden“ (`192.0.2.1`). Diesen Client nicht stehen lassen.
 3. Den Read-Node öffnen, als Server den **bereits vorhandenen** Huawei-Modbus-Client wählen und die Unit-ID leer lassen. Damit gilt die Unit-ID des bestehenden Clients.
 4. Den Platzhalter-Client löschen.

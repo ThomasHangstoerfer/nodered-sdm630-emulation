@@ -9,19 +9,19 @@ const glue = fs.readFileSync(path.join(root, 'flow', 'glue.js'), 'utf8');
 const func = 'const sdm = (function (module) {\n' + lib + '\nreturn module.exports;\n})({ exports: {} });\n' + glue;
 
 const template = `<style>
-  .wrap { font-family: "Segoe UI", sans-serif; line-height: 1.35; }
-  .headline { font-size: 1.45rem; font-weight: 650; margin: 0 0 0.4rem; }
-  .signed { margin: 0 0 0.6rem; color: #334155; }
-  .import { color: #9a3412; }
-  .export { color: #166534; }
-  .idle { color: #334155; }
-  .wait, .manual { color: #92400e; }
-  table { width: 100%; border-collapse: collapse; }
-  td { padding: 0.2rem 0.4rem 0.2rem 0; vertical-align: top; }
-  td:first-child { color: #475569; width: 38%; }
-  .note { margin: 0.6rem 0 0; color: #92400e; }
+  .sdm630-panel { font-family: "Segoe UI", sans-serif; line-height: 1.35; }
+  .sdm630-panel .headline { font-size: 1.45rem; font-weight: 650; margin: 0 0 0.4rem; }
+  .sdm630-panel .signed { margin: 0 0 0.6rem; color: #334155; }
+  .sdm630-panel .import { color: #9a3412; }
+  .sdm630-panel .export { color: #166534; }
+  .sdm630-panel .idle { color: #334155; }
+  .sdm630-panel .wait, .sdm630-panel .manual { color: #92400e; }
+  .sdm630-panel table { width: 100%; border-collapse: collapse; }
+  .sdm630-panel td { padding: 0.2rem 0.4rem 0.2rem 0; vertical-align: top; }
+  .sdm630-panel td:first-child { color: #475569; width: 38%; }
+  .sdm630-panel .note { margin: 0.6rem 0 0; color: #92400e; }
 </style>
-<div class="wrap" ng-if="msg.payload">
+<div class="sdm630-panel" ng-if="msg.payload">
   <p class="headline" ng-class="msg.payload.tone">{{msg.payload.headline}}</p>
   <p class="signed">Register 0x0034: {{msg.payload.signed}}</p>
   <table>
@@ -32,7 +32,7 @@ const template = `<style>
   </table>
   <p class="note" ng-if="msg.payload.note">{{msg.payload.note}}</p>
 </div>
-<div class="wrap" ng-if="!msg.payload"><p>Warte auf den ersten Zählerwert.</p></div>`;
+<div class="sdm630-panel" ng-if="!msg.payload"><p>Warte auf den ersten Zählerwert.</p></div>`;
 
 const flow = [
   {
@@ -43,25 +43,11 @@ const flow = [
     info: 'Liest den DTSU666-H über den bestehenden Huawei-Modbus-Client und antwortet dem Growatt als Eastron SDM630. Die Huawei-Lesung ist absichtlich deaktiviert.'
   },
   {
-    id: 'sdm-ui-base',
-    type: 'ui_base',
-    theme: { name: 'theme-light' },
-    site: {
-      name: 'SDM630 Emulation',
-      hideToolbar: 'false',
-      allowSwipe: 'false',
-      lockMenu: 'false',
-      allowTempTheme: 'true',
-      dateFormat: 'DD.MM.YYYY',
-      sizes: { sx: 48, sy: 48, gx: 6, gy: 6, cx: 6, cy: 6, px: 0, py: 0 }
-    }
-  },
-  {
     id: 'sdm-ui-tab',
     type: 'ui_tab',
     name: 'SDM630',
     icon: 'dashboard',
-    order: 1,
+    order: 99,
     disabled: false,
     hidden: false
   },

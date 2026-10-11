@@ -117,6 +117,8 @@ test('der Import-Flow verbindet den Huawei-Client nicht', () => {
   assert.equal(client.tcpHost, '192.0.2.1');
   assert.equal(server.serverPort, '1502');
   assert.equal(rtu.port, '1503');
+  assert.equal(flow.some((node) => node.type === 'ui_base'), false);
+  assert.ok(flow.find((node) => node.id === 'sdm-ui-tab').order >= 10);
 });
 
 test('RTU antwortet nur Adresse 2, FC03 und FC04, und übersteht Teilstücke', () => {

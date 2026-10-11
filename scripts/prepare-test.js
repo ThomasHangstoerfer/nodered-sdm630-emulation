@@ -15,6 +15,20 @@ for (const name of ['node-red-contrib-modbus', 'node-red-dashboard']) {
 }
 
 const flow = JSON.parse(fs.readFileSync(path.join(root, 'flows', 'sdm630.json'), 'utf8'));
+flow.unshift({
+  id: 'sdm-ui-base',
+  type: 'ui_base',
+  theme: { name: 'theme-light' },
+  site: {
+    name: 'SDM630 Test',
+    hideToolbar: 'false',
+    allowSwipe: 'false',
+    lockMenu: 'false',
+    allowTempTheme: 'true',
+    dateFormat: 'DD.MM.YYYY',
+    sizes: { sx: 48, sy: 48, gx: 6, gy: 6, cx: 6, cy: 6, px: 0, py: 0 }
+  }
+});
 const client = flow.find((node) => node.id === 'sdm-client');
 client.tcpHost = '127.0.0.1';
 client.tcpPort = '15021';

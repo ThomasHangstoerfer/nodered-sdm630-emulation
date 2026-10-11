@@ -7,36 +7,11 @@
     "info": "Liest den DTSU666-H über den bestehenden Huawei-Modbus-Client und antwortet dem Growatt als Eastron SDM630. Die Huawei-Lesung ist absichtlich deaktiviert."
   },
   {
-    "id": "sdm-ui-base",
-    "type": "ui_base",
-    "theme": {
-      "name": "theme-light"
-    },
-    "site": {
-      "name": "SDM630 Emulation",
-      "hideToolbar": "false",
-      "allowSwipe": "false",
-      "lockMenu": "false",
-      "allowTempTheme": "true",
-      "dateFormat": "DD.MM.YYYY",
-      "sizes": {
-        "sx": 48,
-        "sy": 48,
-        "gx": 6,
-        "gy": 6,
-        "cx": 6,
-        "cy": 6,
-        "px": 0,
-        "py": 0
-      }
-    }
-  },
-  {
     "id": "sdm-ui-tab",
     "type": "ui_tab",
     "name": "SDM630",
     "icon": "dashboard",
-    "order": 1,
+    "order": 99,
     "disabled": false,
     "hidden": false
   },
@@ -330,7 +305,7 @@
     "order": 1,
     "width": 12,
     "height": 9,
-    "format": "<style>\n  .wrap { font-family: \"Segoe UI\", sans-serif; line-height: 1.35; }\n  .headline { font-size: 1.45rem; font-weight: 650; margin: 0 0 0.4rem; }\n  .signed { margin: 0 0 0.6rem; color: #334155; }\n  .import { color: #9a3412; }\n  .export { color: #166534; }\n  .idle { color: #334155; }\n  .wait, .manual { color: #92400e; }\n  table { width: 100%; border-collapse: collapse; }\n  td { padding: 0.2rem 0.4rem 0.2rem 0; vertical-align: top; }\n  td:first-child { color: #475569; width: 38%; }\n  .note { margin: 0.6rem 0 0; color: #92400e; }\n</style>\n<div class=\"wrap\" ng-if=\"msg.payload\">\n  <p class=\"headline\" ng-class=\"msg.payload.tone\">{{msg.payload.headline}}</p>\n  <p class=\"signed\">Register 0x0034: {{msg.payload.signed}}</p>\n  <table>\n    <tr ng-repeat=\"row in msg.payload.rows\">\n      <td>{{row.label}}</td>\n      <td>{{row.value}}</td>\n    </tr>\n  </table>\n  <p class=\"note\" ng-if=\"msg.payload.note\">{{msg.payload.note}}</p>\n</div>\n<div class=\"wrap\" ng-if=\"!msg.payload\"><p>Warte auf den ersten Zählerwert.</p></div>",
+    "format": "<style>\n  .sdm630-panel { font-family: \"Segoe UI\", sans-serif; line-height: 1.35; }\n  .sdm630-panel .headline { font-size: 1.45rem; font-weight: 650; margin: 0 0 0.4rem; }\n  .sdm630-panel .signed { margin: 0 0 0.6rem; color: #334155; }\n  .sdm630-panel .import { color: #9a3412; }\n  .sdm630-panel .export { color: #166534; }\n  .sdm630-panel .idle { color: #334155; }\n  .sdm630-panel .wait, .sdm630-panel .manual { color: #92400e; }\n  .sdm630-panel table { width: 100%; border-collapse: collapse; }\n  .sdm630-panel td { padding: 0.2rem 0.4rem 0.2rem 0; vertical-align: top; }\n  .sdm630-panel td:first-child { color: #475569; width: 38%; }\n  .sdm630-panel .note { margin: 0.6rem 0 0; color: #92400e; }\n</style>\n<div class=\"sdm630-panel\" ng-if=\"msg.payload\">\n  <p class=\"headline\" ng-class=\"msg.payload.tone\">{{msg.payload.headline}}</p>\n  <p class=\"signed\">Register 0x0034: {{msg.payload.signed}}</p>\n  <table>\n    <tr ng-repeat=\"row in msg.payload.rows\">\n      <td>{{row.label}}</td>\n      <td>{{row.value}}</td>\n    </tr>\n  </table>\n  <p class=\"note\" ng-if=\"msg.payload.note\">{{msg.payload.note}}</p>\n</div>\n<div class=\"sdm630-panel\" ng-if=\"!msg.payload\"><p>Warte auf den ersten Zählerwert.</p></div>",
     "storeOutMessages": true,
     "fwdInMessages": false,
     "resendOnRefresh": true,
